@@ -30,7 +30,7 @@ describe Asari do
 
     it "converts Time, DateTime, and Date fields to timestamp integers for rankability" do
       date = Date.new(2012, 4, 1)
-      HTTParty.should_receive(:post).with("http://doc-testdomain.us-east-1.cloudsearch.amazonaws.com/2011-02-01/documents/batch", { :body => [{ "type" => "add", "id" => "1", "version" => 1, "lang" => "en", "fields" => { :time => 1333263600, :datetime => 1333238400, :date => date.to_time.to_i }}].to_json, :headers => { "Content-Type" => "application/json"}})
+      HTTParty.should_receive(:post).with("http://doc-testdomain.us-east-1.cloudsearch.amazonaws.com/2011-02-01/documents/batch", { :body => [{ "type" => "add", "id" => "1", "version" => 1, "lang" => "en", "fields" => { :time => Time.at(1333263600).utc.strftime("%FT%TZ"), :datetime => DateTime.new(2012, 4, 1).strftime("%FT%TZ"), :date => date.strftime("%FT%TZ") }}].to_json, :headers => { "Content-Type" => "application/json"}})
 
       expect(@asari.add_item("1", {:time => Time.at(1333263600), :datetime => DateTime.new(2012, 4, 1), :date => date})).to eq(nil)
     end
@@ -43,7 +43,7 @@ describe Asari do
 
     it "converts Time, DateTime, and Date fields to timestamp integers for rankability on update as well" do
       date = Date.new(2012, 4, 1)
-      HTTParty.should_receive(:post).with("http://doc-testdomain.us-east-1.cloudsearch.amazonaws.com/2011-02-01/documents/batch", { :body => [{ "type" => "add", "id" => "1", "version" => 1, "lang" => "en", "fields" => { :time => 1333263600, :datetime => 1333238400, :date => date.to_time.to_i }}].to_json, :headers => { "Content-Type" => "application/json"}})
+      HTTParty.should_receive(:post).with("http://doc-testdomain.us-east-1.cloudsearch.amazonaws.com/2011-02-01/documents/batch", { :body => [{ "type" => "add", "id" => "1", "version" => 1, "lang" => "en", "fields" => { :time => Time.at(1333263600).utc.strftime("%FT%TZ"), :datetime => DateTime.new(2012, 4, 1).strftime("%FT%TZ"), :date => date.strftime("%FT%TZ") }}].to_json, :headers => { "Content-Type" => "application/json"}})
 
       expect(@asari.update_item("1", {:time => Time.at(1333263600), :datetime => DateTime.new(2012, 4, 1), :date => date})).to eq(nil)
     end
