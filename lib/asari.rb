@@ -236,18 +236,20 @@ class Asari
       hash.reduce("") do |memo, (key, value)|
         if %w(and or not).include?(key.to_s) && value.is_a?(Hash)
           sub_query = reduce.call(value)
-          memo += "(#{key}#{sub_query})" unless sub_query.empty?
+          memo += "(#{key} #{sub_query})" unless sub_query.empty?
         else
           if value.is_a?(Range) || value.is_a?(Integer)
-            memo += " #{key}:#{value}"
+            memo += "#{key}:#{value} "
+          elsif value.is_a? Array
+            value.each{|v| memo += reduce.call({key => v})}
           else
-            memo += " #{key}:'#{value}'" unless value.to_s.empty?
+            memo += "#{key}:'#{value}' " unless value.to_s.empty?
           end
         end
         memo
       end
     }
-    reduce.call(terms)
+    reduce.call(terms).gsub(' )', ')')
   end
 
   def normalize_rank(rank)

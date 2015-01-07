@@ -5,6 +5,25 @@ describe "Asari" do
     @asari = Asari.new
   end
 
+  describe "boolean_query" do
+    it "should evaluate compound query" do
+      expect(@asari.send(:boolean_query, and: { title: "donut", type: "cruller" })).to eq "(and title:'donut' type:'cruller')"
+    end
+
+    it "should evaluate nested compound query" do
+      expect(@asari.send(:boolean_query, and: { title: "donut", or: { type: "cruller|twist" }})).to eq "(and title:'donut' (or type:'cruller|twist'))"
+    end
+
+    it "should evaluate 'or' expression with single key" do
+      expect(@asari.send(:boolean_query, {or: {key: 'bar'} })).to eq "(or key:'bar')"
+    end
+
+    it "should evaluate compound query with same keys" do
+      expect(@asari.send(:boolean_query, {or: {key: ['bar', 'bar2']} })).to eq "(or key:'bar' key:'bar2')"
+    end
+
+  end
+
   describe "configuration" do
     it "defaults to the first CloudSearch API version." do
       expect(@asari.api_version).to eq "2011-02-01"
